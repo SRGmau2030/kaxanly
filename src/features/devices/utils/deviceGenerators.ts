@@ -1,17 +1,22 @@
-import { homeLayout } from '@/data/mockData';
 import { Location } from '@/types';
 
+const DEFAULT_ROOM_IDS = [
+  'living-room',
+  'kitchen',
+  'bedroom',
+  'bathroom',
+  'office',
+  'garage'
+];
+
 export const generateRandomLocation = (): Location => {
-  // Get a random room from the layout
-  const rooms = homeLayout.rooms;
-  const randomRoom = rooms[Math.floor(Math.random() * rooms.length)];
-  
-  // Generate random coordinates within the room's dimensions
-  const x = Math.floor(Math.random() * (randomRoom.width - 40) + 20); // Padding of 20px from edges
-  const y = Math.floor(Math.random() * (randomRoom.height - 40) + 20);
-  
+  const randomRoom = DEFAULT_ROOM_IDS[Math.floor(Math.random() * DEFAULT_ROOM_IDS.length)];
+
+  const x = Math.floor(Math.random() * 160) + 20;
+  const y = Math.floor(Math.random() * 120) + 20;
+
   return {
-    roomId: randomRoom.id,
+    roomId: randomRoom,
     x,
     y
   };

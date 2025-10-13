@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Room, Device } from '../../types';
-import { homeLayout } from '../../data/mockData';
 import { useDevices } from '../../context/DeviceContext';
 import DeviceMarker from './DeviceMarker';
 
@@ -9,11 +8,19 @@ interface HomeMapProps {
 }
 
 const HomeMap: React.FC<HomeMapProps> = ({ devices }) => {
-  const { selectDevice, selectedDevice } = useDevices();
+  const { selectDevice, selectedDevice, homeLayout } = useDevices();
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  if (!homeLayout || !homeLayout.rooms.length) {
+    return (
+      <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
+        <p className="text-gray-500">Loading home layout...</p>
+      </div>
+    );
+  }
 
   const maxX = Math.max(...homeLayout.rooms.map(room => room.x + room.width));
   const maxY = Math.max(...homeLayout.rooms.map(room => room.y + room.height));

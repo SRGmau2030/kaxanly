@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DeviceProvider } from './context/DeviceContext';
 import { useDevices } from './context/DeviceContext';
-import { DeviceType } from './types';
+import { DeviceType, Device } from './types';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
 import HomeMap from './components/map/HomeMap';
@@ -12,14 +12,16 @@ import { format } from 'date-fns';
 import { HouseScanner } from './features/home/components/HouseScanner';
 
 const AppContent = () => {
-  const { 
-    devices, 
-    selectedDevice, 
-    selectDevice, 
-    addDevice, 
-    updateDevice, 
+  const {
+    devices,
+    selectedDevice,
+    selectDevice,
+    addDevice,
+    updateDevice,
     deleteDevice,
-    playSound
+    playSound,
+    loading,
+    error
   } = useDevices();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -44,19 +46,27 @@ const AppContent = () => {
     setIsEditingDevice(true);
   };
 
-  const handleFormSubmit = (device: Omit<Device, 'id'>) => {
-    if (isEditingDevice && selectedDevice) {
-      updateDevice(selectedDevice.id, device);
-      setIsEditingDevice(false);
-    } else {
-      addDevice(device);
-      setIsAddingDevice(false);
+  const handleFormSubmit = async (device: Omit<Device, 'id'>) => {
+    try {
+      if (isEditingDevice && selectedDevice) {
+        await updateDevice(selectedDevice.id, device);
+        setIsEditingDevice(false);
+      } else {
+        await addDevice(device);
+        setIsAddingDevice(false);
+      }
+    } catch (error) {
+      console.error('Error saving device:', error);
     }
   };
 
-  const handleDeleteDevice = () => {
+  const handleDeleteDevice = async () => {
     if (selectedDevice) {
-      deleteDevice(selectedDevice.id);
+      try {
+        await deleteDevice(selectedDevice.id);
+      } catch (error) {
+        console.error('Error deleting device:', error);
+      }
     }
   };
 
@@ -88,10 +98,37 @@ const AppContent = () => {
     setViewMode(viewMode === 'map' ? 'list' : 'map');
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading devices...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error: {error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <Header 
-        onAddDevice={handleAddDevice} 
+      <Header
+        onAddDevice={handleAddDevice}
         onToggleSidebar={toggleSidebar}
         onSearch={handleSearch}
         isHouseScanned={isHouseScanned}

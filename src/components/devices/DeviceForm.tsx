@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Device, DeviceType } from '../../types';
 import { X } from 'lucide-react';
-import { deviceTypeToIcon, deviceTypeToColor } from '../../data/mockData';
+import { deviceTypeToIcon, deviceTypeToColor } from '../../constants/deviceStyles';
 import { generateRandomLocation, generateRandomBattery } from '@/features/devices/utils/deviceGenerators';
 
 interface DeviceFormProps {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Device } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
 import { Battery, Clock, MapPin, X, Volume2, Pencil, Trash2, HelpCircle } from 'lucide-react';
-import { deviceTypeToIcon } from '../../data/mockData';
+import { roomIdToName } from '../../constants/deviceStyles';
 
 interface DeviceDetailProps {
   device: Device;
@@ -69,16 +69,7 @@ const DeviceDetail: React.FC<DeviceDetailProps> = ({
   };
 
   const getRoomName = () => {
-    const roomMap: Record<string, string> = {
-      'living-room': 'Living Room',
-      'bedroom': 'Bedroom',
-      'kitchen': 'Kitchen',
-      'bathroom': 'Bathroom',
-      'office': 'Office',
-      'garage': 'Garage',
-    };
-    
-    return roomMap[device.location.roomId] || 'Unknown Room';
+    return roomIdToName[device.location.roomId] || 'Unknown Room';
   };
 
   return (
