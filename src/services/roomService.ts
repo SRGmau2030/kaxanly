@@ -16,7 +16,8 @@ export const roomService = {
     const { data: homeData, error: homeError } = await supabase
       .from('home_layouts')
       .select('*')
-      .eq('user_id', userId)
+      .or(`user_id.eq.${userId},user_id.is.null`)
+      .limit(1)
       .maybeSingle();
 
     if (homeError) throw homeError;
