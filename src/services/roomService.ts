@@ -13,25 +13,20 @@ export interface RoomInput {
 
 export const roomService = {
   async getHomeLayout(userId: string): Promise<HomeLayout | null> {
-    const { data: homeData, error: homeError } = await supabase
+    const { data, error } = await supabase
       .from('home_layouts')
-      .select('*')
-      .or(`user_id.eq.${userId},user_id.is.null`)
-      .limit(1)
+      .select(`
+        *,
+        rooms (*)
+      `)
+      .eq('user_id', userId)
+      .order('name', { foreignTable: 'rooms' })
       .maybeSingle();
 
-    if (homeError) throw homeError;
-    if (!homeData) return null;
+    if (error) throw error;
+    if (!data) return null;
 
-    const { data: roomsData, error: roomsError } = await supabase
-      .from('rooms')
-      .select('*')
-      .eq('home_layout_id', homeData.id)
-      .order('name');
-
-    if (roomsError) throw roomsError;
-
-    const rooms: Room[] = (roomsData || []).map(room => ({
+    const rooms: Room[] = (data.rooms || []).map((room: any) => ({
       id: room.id,
       name: room.name,
       floor: room.floor,
@@ -42,8 +37,8 @@ export const roomService = {
     }));
 
     return {
-      id: homeData.id,
-      name: homeData.name,
+      id: data.id,
+      name: data.name,
       rooms,
     };
   },
