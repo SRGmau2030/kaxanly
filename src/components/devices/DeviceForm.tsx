@@ -3,6 +3,7 @@ import { Device, DeviceType } from '../../types';
 import { X } from 'lucide-react';
 import { deviceTypeToIcon, deviceTypeToColor } from '../../constants/deviceStyles';
 import { generateRandomLocation, generateRandomBattery } from '@/features/devices/utils/deviceGenerators';
+import { useDevices } from '../../context/DeviceContext';
 
 interface DeviceFormProps {
   onSubmit: (device: Omit<Device, 'id'>) => void;
@@ -11,10 +12,13 @@ interface DeviceFormProps {
 }
 
 const DeviceForm: React.FC<DeviceFormProps> = ({ onSubmit, onClose, editDevice }) => {
+  const { homeLayout } = useDevices();
+  const availableRoomIds = homeLayout?.rooms.map(r => r.id) || [];
+
   const [formData, setFormData] = useState<Omit<Device, 'id'>>({
     name: '',
     type: 'phone',
-    location: generateRandomLocation(),
+    location: generateRandomLocation(availableRoomIds),
     status: 'online',
     battery: generateRandomBattery(),
     lastSeen: new Date(),
@@ -41,8 +45,7 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ onSubmit, onClose, editDevice }
       type,
       icon: deviceTypeToIcon[type],
       color: deviceTypeToColor[type],
-      // Generate new random values when type changes
-      location: generateRandomLocation(),
+      location: generateRandomLocation(availableRoomIds),
       battery: generateRandomBattery(),
     }));
   };

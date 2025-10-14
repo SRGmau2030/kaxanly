@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Device } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
 import { Battery, Clock, MapPin, X, Volume2, Pencil, Trash2, HelpCircle } from 'lucide-react';
-import { roomIdToName } from '../../constants/deviceStyles';
+import { useDevices } from '../../context/DeviceContext';
 
 interface DeviceDetailProps {
   device: Device;
@@ -12,13 +12,14 @@ interface DeviceDetailProps {
   onDelete: () => void;
 }
 
-const DeviceDetail: React.FC<DeviceDetailProps> = ({ 
-  device, 
-  onClose, 
-  onPlaySound, 
-  onEdit, 
-  onDelete 
+const DeviceDetail: React.FC<DeviceDetailProps> = ({
+  device,
+  onClose,
+  onPlaySound,
+  onEdit,
+  onDelete
 }) => {
+  const { homeLayout } = useDevices();
   const [Icon, setIcon] = useState<any>(null);
 
   useEffect(() => {
@@ -69,7 +70,9 @@ const DeviceDetail: React.FC<DeviceDetailProps> = ({
   };
 
   const getRoomName = () => {
-    return roomIdToName[device.location.roomId] || 'Unknown Room';
+    if (!homeLayout) return 'Unknown Room';
+    const room = homeLayout.rooms.find(r => r.id === device.location.roomId);
+    return room ? room.name : 'Unknown Room';
   };
 
   return (
