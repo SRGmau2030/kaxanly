@@ -55,6 +55,16 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const addDevice = useCallback(async (device: Omit<Device, 'id'>) => {
     try {
+      const isDuplicate = await deviceService.checkDuplicate(
+        device.name,
+        device.type,
+        DEMO_USER_ID
+      );
+
+      if (isDuplicate) {
+        throw new Error(`A device with the name "${device.name}" and type "${device.type}" already exists.`);
+      }
+
       const newDevice = await deviceService.create({
         name: device.name,
         type: device.type,
@@ -73,6 +83,19 @@ export const DeviceProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   const updateDevice = useCallback(async (id: string, updates: Partial<Device>) => {
     try {
+      if (updates.name !== undefined && updates.type !== undefined) {
+        const isDuplicate = await deviceService.checkDuplicate(
+          updates.name,
+          updates.type,
+          DEMO_USER_ID,
+          id
+        );
+
+        if (isDuplicate) {
+          throw new Error(`A device with the name "${updates.name}" and type "${updates.type}" already exists.`);
+        }
+      }
+
       const updatedDevice = await deviceService.update(id, {
         name: updates.name,
         type: updates.type,

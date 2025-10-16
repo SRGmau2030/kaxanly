@@ -58,6 +58,25 @@ export const deviceService = {
     };
   },
 
+  async checkDuplicate(name: string, type: DeviceType, userId: string, excludeId?: string): Promise<boolean> {
+    let query = supabase
+      .from('devices')
+      .select('id')
+      .eq('name', name)
+      .eq('type', type)
+      .or(`user_id.eq.${userId},user_id.is.null`);
+
+    if (excludeId) {
+      query = query.neq('id', excludeId);
+    }
+
+    const { data, error } = await query.maybeSingle();
+
+    if (error) throw error;
+
+    return data !== null;
+  },
+
   async create(device: DeviceInput, userId: string): Promise<Device> {
     const { data, error } = await supabase
       .from('devices')
