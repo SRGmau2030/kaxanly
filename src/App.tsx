@@ -220,7 +220,7 @@ const AppContent = () => {
                 setIsEditingDevice(false);
                 setErrorMessage(null);
               }}
-              editDevice={isEditingDevice ? selectedDevice : undefined}
+              editDevice={isEditingDevice && selectedDevice ? selectedDevice : undefined}
             />
           </div>
         </div>
