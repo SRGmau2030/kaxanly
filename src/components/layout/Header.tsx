@@ -45,6 +45,7 @@ const Header: React.FC<HeaderProps> = ({
         <button 
           className="mr-3 p-2 rounded-full md:hidden hover:bg-gray-100 transition-colors"
           onClick={onToggleSidebar}
+          aria-label="Toggle Sidebar" // <-- AÑADIDO
         >
           <Menu size={20} />
         </button>
@@ -73,6 +74,7 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               className="absolute right-2 text-gray-500 hover:text-gray-700"
               onClick={clearSearch}
+              aria-label="Clear Search" // <-- AÑADIDO
             >
               <X size={16} />
             </button>
@@ -81,6 +83,7 @@ const Header: React.FC<HeaderProps> = ({
           <button 
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
             onClick={toggleSearch}
+            aria-label="Search" // <-- AÑADIDO
           >
             <Search size={20} />
           </button>
